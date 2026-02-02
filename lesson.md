@@ -592,4 +592,41 @@ It is shorthand for `CAST(value AS datatype)`; for example, `resale_price::INTEG
 
 -  **Business Use Case:** Why is it important to standardize date formats when merging data from two different countries?
 
+Standardizing date formats when merging data from two different countries is critical for these reasons:
+
+1. Prevents Misinterpretation
+Different countries use different date formats:
+
+US: MM/DD/YYYY (e.g., 03/12/2025 = March 12)
+Europe/Singapore: DD/MM/YYYY (e.g., 03/12/2025 = December 3)
+ISO Standard: YYYY-MM-DD (e.g., 2025-03-12)
+Without standardization, 03/12/2025 could mean two completely different dates, causing analysis errors.
+
+2. Enables Correct Calculations
+Once dates are in a standard format (like YYYY-MM-DD) and converted to a DATE type, you can:
+
+Compare dates accurately (WHERE transaction_date > '2017-01-01')
+Calculate differences (AGE(date1, date2))
+Extract components (date_part('year', transaction_date))
+Without proper type conversion, dates stored as text strings can't perform these operations.
+
+3. Ensures Data Consistency
+Mixing formats in one dataset causes:
+
+Some rows to be interpreted incorrectly
+Aggregate functions to fail or produce wrong results
+Sorting and filtering to behave unexpectedly
+Solution in SQL:
+As shown in Task 6, use CAST() or :: to convert text to proper DATE type:
+
+
+CONCAT(month, '-01')::DATE AS transaction_date
+This transforms raw text into a standardized, machine-readable date that all databases understand the same way.
+
+The ISO 8601 standard is the international date and time format specification.
+
+ISO 8601 Date Format: YYYY-MM-DD
+
+Example: 2025-03-12 represents March 12, 2025
+
 ***
