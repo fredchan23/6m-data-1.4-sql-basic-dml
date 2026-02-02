@@ -118,3 +118,53 @@ SELECT
     date_part('year', (month || '-01')::DATE) AS sale_year,
     (CONCAT(month, '-01')::DATE + INTERVAL '1 month') AS next_month_date
 FROM resale_flat_prices_2017;
+
+
+-- Select the minimum and maximum price per sqm of all the flats.
+SELECT
+  ROUND(MIN(resale_price / floor_area_sqm), 0) AS min_price_per_sqm,
+  ROUND(MAX(resale_price / floor_area_sqm), 0) AS max_price_per_sqm
+FROM resale_flat_prices_2017
+WHERE floor_area_sqm > 0;
+
+
+-- Select the average price per sqm for flats in each town.
+SELECT town,
+  ROUND(AVG(resale_price / floor_area_sqm), 0) AS avg_price_per_sqm
+FROM resale_flat_prices_2017
+WHERE floor_area_sqm > 0
+GROUP BY town
+ORDER BY avg_price_per_sqm DESC;
+
+
+-- Categorize flats into price ranges and count how many flats fall into each category:
+-- - Under $400,000: 'Budget'
+-- $400,000 to $700,000: 'Mid-Range'
+-- Above $700,000: 'Premium'
+-- Show the counts in descending order.
+SELECT
+  CASE
+    WHEN resale_price < 400000 THEN 'Budget'
+    WHEN resale_price BETWEEN 400000 AND 700000 THEN 'Mid-Range'
+    ELSE 'Premium'
+  END AS price_category,
+  COUNT(*) AS flat_count
+FROM
+  resale_flat_prices_2017
+GROUP BY
+  price_category
+ORDER BY
+  flat_count DESC;
+
+-- Count the number of flats sold in each town during the first quarter of 2017 (January to March).
+SELECT
+  town,
+  COUNT(*) AS flat_count
+FROM
+  resale_flat_prices_2017
+WHERE
+  month IN ('2017-01', '2017-02', '2017-03')
+GROUP BY
+  town
+ORDER BY
+  flat_count DESC;

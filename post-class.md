@@ -27,17 +27,29 @@ Paste the answer as SQL in Discord Peer-Review channel. https://discord.com/chan
 ### Question 1
 
 Select the minimum and maximum price per sqm of all the flats.
+Maximum - $15591 per square metres
+Minimum - $2090 per square metres
 
 ```sql
-
+SELECT
+  ROUND(MIN(resale_price / floor_area_sqm), 0) AS min_price_per_sqm,
+  ROUND(MAX(resale_price / floor_area_sqm), 0) AS max_price_per_sqm
+FROM resale_flat_prices_2017
+WHERE floor_area_sqm > 0;
 ```
 
 ### Question 2
 
 Select the average price per sqm for flats in each town.
 
-```sql
 
+```sql
+SELECT town,
+  ROUND(AVG(resale_price / floor_area_sqm), 0) AS avg_price_per_sqm
+FROM resale_flat_prices_2017
+WHERE floor_area_sqm > 0
+GROUP BY town
+ORDER BY avg_price_per_sqm DESC;
 ```
 
 ### Question 3
@@ -50,7 +62,19 @@ Categorize flats into price ranges and count how many flats fall into each categ
   Show the counts in descending order.
 
 ```sql
-
+SELECT
+  CASE
+    WHEN resale_price < 400000 THEN 'Budget'
+    WHEN resale_price BETWEEN 400000 AND 700000 THEN 'Mid-Range'
+    ELSE 'Premium'
+  END AS price_category,
+  COUNT(*) AS flat_count
+FROM
+  resale_flat_prices_2017
+GROUP BY
+  price_category
+ORDER BY
+  flat_count DESC;
 ```
 
 ### Question 4
@@ -58,7 +82,17 @@ Categorize flats into price ranges and count how many flats fall into each categ
 Count the number of flats sold in each town during the first quarter of 2017 (January to March).
 
 ```sql
-
+SELECT
+  town,
+  COUNT(*) AS flat_count
+FROM
+  resale_flat_prices_2017
+WHERE
+  month IN ('2017-01', '2017-02', '2017-03')
+GROUP BY
+  town
+ORDER BY
+  flat_count DESC;
 ```
 
 ---
